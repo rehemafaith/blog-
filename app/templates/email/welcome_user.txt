@@ -1,0 +1,4 @@
+Hello {{new_user.username}}
+Welcome to 60sec Pitch 
+We have just seen you have signed up for our application and want to welcome you to the family.
+I hope you will bw able to make the best out of this application.
