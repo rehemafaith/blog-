@@ -1,92 +1,105 @@
-from . import db 
-from werkzeug.security import generate_password_hash,check_password_hash
+from . import db
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from . import login_manager 
-
-
+from . import login_manager
+from datetime import datetime
 
 
 class Quotes:
-  '''
-  Quotes class to define Quotes Objects 
-  '''
+    '''
+    Quotes class to define quotes object
+    '''
 
-  def __init__(self,id,author,title,description,urlToImage,url):
-
-      self.id = id
-      self.author = author 
-      self.quote = quote
-
-class User(UserMixin,db.Model):
-  __tablename__ = 'users'
-
-  id = db.Column(db.Integer,primary_key = True)
-  username = db.Column(db.String(255))
-  email = db.Column(db.String,unique = True,index=True)
-  pass_secure = db.Column(db.String)
+    def __init__(self, author, quote):
+        self.author = author
+        self.quote = quote
 
 
-  @property
-  def password(self):
-    raise AttributeError('You cannot read the password attribute')
-
-  @password.setter
-  def password(self, password):
-    self.pass_secure = generate_password_hash(password)
-
-
-  def verify_password(self,password):
-    return check_password_hash(self.pass_secure,password)
-
-
-  @login_manager.user_loader
-  def load_user(user_id):
+@login_manager.user_loader
+def load_user(user_id):
     return User.query.get(int(user_id))
 
-  def __repr__(self):
-    return f'User {self.username}'
-    
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(255), index=True)
+    firstname = db.Column(db.String(255))
+    lastname = db.Column(db.String(255))
+    email = db.Column(db.String(255), unique=True, index=True)
+    subscription = db.Column(db.Boolean)
+    bio = db.Column(db.String(255))
+    profile_pic_path = db.Column(db.String)
+    password_hash = db.Column(db.String(255))
+    date_joined = db.Column(db.DateTime, default=datetime.utcnow)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    posts = db.relationship('Post', backref='user', lazy="dynamic")
+    comments = db.relationship('Comment', backref='user', lazy="dynamic")
+
+
+
+    @property
+    def password(self):
+        raise AttributeError('You cannnot read the password attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f'User {self.username}'
+
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    users = db.relationship('User', backref='role', lazy="dynamic")
+
+    def __repr__(self):
+        return f'User {self.name}'
+
 
 class Post(db.Model):
-
     __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String())
+    post = db.Column(db.String())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    comments = db.relationship('Comment', backref='post_id', lazy='dynamic')
 
-    id = db.Column(db.Integer,primary_key= True)
-    content = db.Column(db.String)
-    title = db.Column(db.String)
-    date = db.Column(db.String)
-    time = db.Column(db.String)
-    user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
-    comments = db.relationship("Comment", backref = "pitch", lazy = "dynamic")
-    category = db.Column(db.String)
-
-    
     def save_post(self):
         db.session.add(self)
         db.session.commit()
 
-    @classmethod
-    def get_post(cls,id):
-        posts = Post.query.filter_by(post_id=id).first()
-        comments = Comment.query.filter_by(post_id = post.id).order_by(Comment.time.desc())
-        return posts
+    def get_post(id):
+        post = Post.query.filter_by(id=id).first()
+        return post
 
 
 class Comment(db.Model):
-    
-    __tablename__= "comments"
-
-    id = db.Column(db.Integer,primary_key = True)
-    content = db.Column(db.String)
-    date = db.Column(db.String)
-    time = db.Column(db.String)
-    user_id = db.Column(db.Integer,db.ForeignKey("users.id"))
-    post_id = db.Column(db.Integer,db.ForeignKey("posts.id"))
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    comment = db.Column(db.String(1000))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
     def save_comment(self):
-        db.session.ass(self)
-        db.session.commmit()
-     
-    
+        db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def get_comments(cls, post):
+        comments = Comment.query.filter_by(post=post.id).all()
+        return comments
 
 
+class PhotoProfile(db.Model):
+    __tablename__ = 'profile_photos'
+    id = db.Column(db.Integer, primary_key=True)
+    pic_path = db.Column(db.String())
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
