@@ -1,1 +1,60 @@
-<h1>Hello World</h1>
+{% extends "base.html" %}
+
+
+{% block styles%}
+{{super()}}
+<link href="https://fonts.googleapis.com/css?family=Courgette|Pacifico" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ message }}
+  </div>
+  {% endfor %}
+  <div class= "jumbotron">
+    <h1 class="text-center">Welcome to MyBlog.</h1>
+  </div>
+  
+  <div class="post">
+    <p class="quote">{{quote}}</p>
+    <p id="name">"{{quote_author}}"</p>
+
+
+  </div>
+ 
+    </div>
+  
+
+
+<style>
+  .post {
+    text-align: center;
+    font-size: 150%;
+   
+    border: 0.8px solid black;
+    border-radius: 40px;
+    padding: 20%;
+  }
+  #name {
+    font-weight: bold;
+    font-family: Courgette;
+    font-size: 175%;
+  }
+  .container-fluid{
+     background-image: url('https://images.pexels.com/photos/1939485/pexels-photo-1939485.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500')
+  }
+  .quote{
+    font-size:3.0em;
+    font-family: 'Pacifico', cursive;
+  }
+  .jumbotron {
+    background-color: #13F4F4;
+    font-family: 'Courgette', cursive;
+  }
+  
+ </style>
+{% endblock %}

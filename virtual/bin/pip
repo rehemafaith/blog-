@@ -1,5 +1,4 @@
-#!/home/faithrehema/Documents/blog/virtual/bin/python3
-
+#!/home/faithrehema/Documents/blog/virtual/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
