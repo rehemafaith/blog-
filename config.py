@@ -4,8 +4,13 @@ class Config:
   '''
   General configuration parent class 
   '''
-  QUOTES_API_BASE_URL = 'http://quotes.stormconsultancy.co.uk/random.json'
+  # QUOTES_API_BASE_URL = 'http://quotes.stormconsultancy.co.uk/random.json'
   SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://faithrehema:fefe@localhost/blog'
+
+  SQLALCHEMY_TRACK_MODIFICATIONS = True
+  SECRET_KEY = 'fefe'
+  UPLOADED_PHOTOS_DEST ='app/static/photos'
+
 class ProdConfig(Config):
   '''
   Production configuration child class
