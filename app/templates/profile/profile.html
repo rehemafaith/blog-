@@ -20,11 +20,11 @@
         <p> {{user.username| capitalize}} has no bio </p>
       {% endif %}
     </div>
-
+  
     <!--Display profile photo-->
     
       {% if user.profile_pic_path %}
-        <img style="border-radius=50%" src="{{url_for('static',filename=user.profile_pic_path)}}" alt="" class="img-thumbnail">
+        <img  src="{{url_for('static',filename=user.profile_pic_path)}}" alt="" class="img-thumbnail">
       {%else%}
         <p>No profile picture</p>
       {% endif %}
